@@ -1,40 +1,46 @@
 package com.example.core.service;
 
 import com.example.core.entity.Book;
+import com.example.core.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class BookService {
-    private final List<Book> books = new ArrayList<>();
-    private Long nextId = 1L;
+    private final BookRepository bookRepository;
+
+    public BookService(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
+    }
 
     public List<Book> getAllBooks() {
-        return books;
+        return bookRepository.findAll();
     }
 
     public Optional<Book> getBookById(Long id) {
-        return books.stream().filter(book -> book.getId().equals(id)).findFirst();
+        return bookRepository.findById(id);
     }
 
     public Book createBook(Book book) {
-        book.setId(nextId++);
-        books.add(book);
-        return book;
+        return bookRepository.save(book);
     }
 
     public Optional<Book> updateBook(Long id, Book newBook) {
-        return getBookById(id).map(book -> {
+        return bookRepository.findById(id).map(book -> {
             book.setTitle(newBook.getTitle());
             book.setAuthor(newBook.getAuthor());
-            return book;
+            book.setYear(newBook.getYear());
+            return bookRepository.save(book);
         });
     }
 
     public boolean deleteBook(Long id) {
-        return books.removeIf(book -> book.getId().equals(id));
+        if (bookRepository.existsById(id)) {
+            bookRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 }
