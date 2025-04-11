@@ -1,4 +1,4 @@
-package com.example.api.controller;
+package com.example.core.api.controller;
 
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
